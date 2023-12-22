@@ -94,14 +94,7 @@ def from_data_request(url, method, num_requests, timeout):
     else:
         print('Nenhum dado encontrado para realizar as solicitações')
 
-    avg_time = total_time / num_requests if num_requests > 0 else 0
-    print('\nResumo do Teste:')
-    print(f'Número total de requisições: {num_requests}')
-    print(f'Número de sucessos: {successes}')
-    print(f'Número de falhas: {failures}')
-    print(f'Tempo médio por requisição: {avg_time:.2f} segundos')
-    print(f'Tempo máximo de requisição: {max_time:.2f} segundos')
-
+    save_report_and_print(responses, num_requests, successes, failures, max_time, total_time)
 
 def from_query_request(url, method, num_requests, timeout):
     responses = []
@@ -142,15 +135,8 @@ def from_query_request(url, method, num_requests, timeout):
         print('Resposta:')
         print(f'{response.text}')
         print('-' * 50)
-
-    avg_time = total_time / num_requests if num_requests > 0 else 0
-    print('\nResumo do Teste:')
-    print(f'Número total de requisições: {num_requests}')
-    print(f'Número de sucessos: {successes}')
-    print(f'Número de falhas: {failures}')
-    print(f'Tempo médio por requisição: {avg_time:.2f} segundos')
-    print(f'Tempo máximo de requisição: {max_time:.2f} segundos')
-
+    
+    save_report_and_print(responses, num_requests, successes, failures, max_time, total_time)
 
 def get_num_requests():
     num_requests = input('Numero de requests: ')
@@ -171,6 +157,30 @@ def get_timeout():
         print(f'Erro ao tentar converser a entrada {
             timeout} para INT', ex)
 
+def save_report_and_print(responses, num_requests, successes, failures, max_time, total_time):
+    avg_time = total_time / num_requests if num_requests > 0 else 0
+    print('\nResumo do Teste:')
+    print(f'Número total de requisições: {num_requests}')
+    print(f'Número de sucessos: {successes}')
+    print(f'Número de falhas: {failures}')
+    print(f'Tempo médio por requisição: {avg_time:.2f} segundos')
+    print(f'Tempo máximo de requisição: {max_time:.2f} segundos')    
+    
+    filename = 'relatorio_final.txt'
+    with open(filename, 'w') as file:
+        for response in responses:
+            file.write('Resultado: ' + response['Resultado'] + ' | Tempo gasto: ' + response['Tempo gasto'] + '\n')
+            file.write('Resposta:\n' + response['Resposta'] + '\n')
+            file.write('-' * 50 + '\n')
+
+        file.write('\nResumo do Teste:\n')
+        file.write(f'Número total de requisições: {num_requests}\n')
+        file.write(f'Número de sucessos: {successes}\n')
+        file.write(f'Número de falhas: {failures}\n')
+        file.write(f'Tempo médio por requisição: {avg_time:.2f} segundos\n')
+        file.write(f'Tempo máximo de requisição: {max_time:.2f} segundos\n')
+
+    print(f'O relatório foi salvo no arquivo: {filename}')
 
 def main():
     url = input('Insira a url da rota que deseja testar: ')
