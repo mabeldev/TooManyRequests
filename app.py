@@ -16,6 +16,14 @@ session = Session()
 
 
 def load_payload(payload_format):
+    '''Carrega os dados de payload a partir de um arquivo CSV ou entrada JSON.
+
+    Parâmetros:
+    - payload_format (str): Formato do payload ('CSV' ou 'JSON')
+
+    Retorna:
+    - list: Lista de dicionários contendo os payloads
+    '''
     data = []
 
     if payload_format.lower() == 'csv':
@@ -48,6 +56,19 @@ def load_payload(payload_format):
 
 
 def from_data_request(url, method, num_requests, timeout, data_inicio):
+    '''
+    Realiza as requisições do tipo POST, PUT ou PATCH com payload.
+
+    Parâmetros:
+    - url (str): URL para requisição
+    - method (str): Método HTTP (POST, PUT ou PATCH)
+    - num_requests (int): Número de requisições a serem feitas
+    - timeout (int): Tempo limite por requisição
+    - data_inicio (datetime): Data e hora de início dos testes
+
+    Retorna:
+    None
+    '''
     total_time = 0
     max_time = float('-inf')
     requests_done = 0
@@ -109,6 +130,19 @@ def from_data_request(url, method, num_requests, timeout, data_inicio):
 
 
 def from_query_request(url, method, num_requests, timeout, data_inicio):
+    '''
+    Realiza as requisições do tipo GET ou DELETE sem payload.
+
+    Parâmetros:
+    - url (str): URL para requisição 
+    - method (str): Método HTTP (GET ou DELETE)
+    - num_requests (int): Número de requisições a serem feitas
+    - timeout (int): Tempo limite por requisição
+    - data_inicio (datetime): Data e hora de início dos testes
+
+    Retorna:
+    None
+    '''
     total_time = 0
     max_time = float('-inf')
     successes = 0
@@ -150,6 +184,12 @@ def from_query_request(url, method, num_requests, timeout, data_inicio):
 
 
 def get_num_requests():
+    '''
+    Obtém o número de requisições que o usuário deseja fazer.
+
+    Retorna:
+    - int: Número de requisições
+    '''
     num_requests = input('Numero de requests: ')
     try:
         num_requests = int(num_requests)
@@ -160,6 +200,12 @@ def get_num_requests():
 
 
 def get_timeout():
+    '''
+    Obtém o tempo limite por requisição definido pelo usuário.
+
+    Retorna: 
+    - int: Tempo limite em segundos
+    '''
     timeout = input('Insira o tempo limite por chamada: ')
     try:
         timeout = int(timeout)
@@ -170,6 +216,22 @@ def get_timeout():
 
 
 def save_report_and_print(requisicoes, num_requests, successes, failures, max_time, total_time, data_inicio):
+    '''
+    Salva o relatório em um arquivo .txt e no banco de dados.
+    Imprime o resumo dos testes.
+
+    Parâmetros:
+    - requisicoes (list): Lista de objetos Requisicao
+    - num_requests (int): Número total de requisições
+    - successes (int): Número de requisições bem-sucedidas
+    - failures (int): Número de falhas nas requisições
+    - max_time (float): Tempo máximo de requisição
+    - total_time (float): Tempo total de requisições
+    - data_inicio (datetime): Data e hora de início dos testes
+
+    Retorna:
+    None
+    '''
     avg_time = total_time / num_requests if num_requests > 0 else 0
     data_termino = datetime.now()
     print('\nResumo do Teste:')
@@ -188,7 +250,7 @@ def save_report_and_print(requisicoes, num_requests, successes, failures, max_ti
                     tempo_maximo=max_time)
     session.add(resumo)
     session.commit()
-    print(f"Resumo ID: {resumo.id}") 
+    print(f"Resumo ID: {resumo.id}")
     for requisicao in requisicoes:
         requisicao.id_resumo = resumo.id
 
@@ -216,6 +278,14 @@ def save_report_and_print(requisicoes, num_requests, successes, failures, max_ti
 
 
 def main():
+    '''
+    Função principal que executa o programa.
+
+    Lê as entradas do usuário e chama as funções para executar as requisições.
+    
+    Retorna:
+    None
+    '''
     print('Caso sua rota seja GET, insira por favor, a url completa com parametros e valores')
     print('Caso sua rota seja POST e etc., insira apenas a url, em seguida será requisitado csv ou json com os dados')
     url = input('Insira a url da rota que deseja testar: ')
