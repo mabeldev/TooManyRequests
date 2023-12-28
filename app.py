@@ -1,11 +1,13 @@
 import csv
-from datetime import datetime
 import json
 import os
 import time
+from datetime import datetime
+
 import requests
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from models import Requisicao, Resumo
 
 
@@ -99,7 +101,7 @@ class App:
                         else:
                             result = 'Falha'
                             failures += 1
-                    except:
+                    except Exception:
                         result = 'Falha'
                         failures += 1
 
@@ -135,7 +137,7 @@ class App:
                     else:
                         result = 'Falha'
                         failures += 1
-                except:
+                except Exception:
                     result = 'Falha'
                     failures += 1
 
@@ -157,8 +159,7 @@ class App:
                 list_requests.append(request)
         else:
             print("Método não suportado")
-        self.save_report(list_requests, num_requests,
-                         successes, failures, max_time, total_time, start_time)
+        self.save_report(list_requests, num_requests, successes, failures, max_time, total_time, start_time)
 
     def get_num_requests(self):
         '''
@@ -172,8 +173,7 @@ class App:
             num_requests = int(num_requests)
             return num_requests
         except Exception as ex:
-            print(f'Erro ao tentar converser a entrada 
-                  {num_requests} para INT', ex)
+            print(f'Erro ao tentar converser a entrada {num_requests} para INT', ex)
 
     def get_timeout(self):
         '''
@@ -254,7 +254,7 @@ class App:
         Retorna:
         - None
         '''
-        filename = f'relatorio_final.txt'
+        filename = 'relatorio_final.txt'
         with open(filename, 'w') as file:
             for requisicao in requisicoes:
                 file.write('Resultado: ' + str(requisicao.resultado) +
