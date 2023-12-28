@@ -6,11 +6,12 @@ import time
 import requests
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Requisicao, Resumo
+from models import Requisicao, Resumo
+
 
 class App:
     def __init__(self):
-        self.engine = create_engine('sqlite:///database.db')  
+        self.engine = create_engine('sqlite:///database.db')
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
 
@@ -54,6 +55,20 @@ class App:
             return None
 
     def make_request(self, url, method, num_requests, timeout, start_time):
+        '''
+        Realiza requisições HTTP para a URL informada utilizando o método especificado
+        e captura métricas sobre as requisições.
+
+        Parâmetros:
+        - url (str): A URL para realizar as requisições
+        - method (str): O método HTTP a ser utilizado (GET, POST, etc)
+        - num_requests (int): O número de requisições a serem feitas
+        - timeout (int): O tempo limite em segundos para cada requisição
+        - start_time (datetime): A hora de início das requisições
+
+        Retorna:
+        - None
+        '''
         total_time = 0
         max_time = float('-inf')
         successes = 0
@@ -62,7 +77,8 @@ class App:
         method = method.upper()
 
         if method in ('POST', 'PUT', 'PATCH'):
-            payload_format = input('Insira o formato do payload: (CSV ou JSON) ')
+            payload_format = input(
+                'Insira o formato do payload: (CSV ou JSON) ')
             payload_data = self.load_payload(payload_format)
             for payload in payload_data:
                 for i in range(num_requests):
@@ -84,6 +100,7 @@ class App:
                             result = 'Falha'
                             failures += 1
                     except:
+                        result = 'Falha'
                         failures += 1
 
                     payload_str = json.dumps(payload)
@@ -94,9 +111,17 @@ class App:
                     max_time = max(max_time, elapsed)
 
                     request = Requisicao(
-                        url=url, payload=payload_str, formato=method,   tempo_limite=timeout, status_code=response.status_code, response=response_str, resultado=result,  tempo=elapsed)
+                        url=url,
+                        payload=payload_str,
+                        formato=method,
+                        tempo_limite=timeout,
+                        status_code=response.status_code,
+                        response=response_str,
+                        resultado=result,
+                        tempo=elapsed)
+
                     list_requests.append(request)
-        elif method == 'GET' or method == 'DELETE':
+        elif method in ('GET', 'DELETE'):
             for i in range(num_requests):
                 start = time.time()
                 try:
@@ -111,6 +136,7 @@ class App:
                         result = 'Falha'
                         failures += 1
                 except:
+                    result = 'Falha'
                     failures += 1
 
                 response_str = str(response)
@@ -120,12 +146,19 @@ class App:
                 max_time = max(max_time, elapsed)
 
                 request = Requisicao(
-                    url=url, payload='', formato=method,   tempo_limite=timeout, status_code=response.status_code, response=response_str, resultado=result,  tempo=elapsed)
+                    url=url,
+                    payload='',
+                    formato=method,
+                    tempo_limite=timeout,
+                    status_code=response.status_code,
+                    response=response_str,
+                    resultado=result,
+                    tempo=elapsed)
                 list_requests.append(request)
         else:
             print("Método não suportado")
-        self.save_report(list_requests, num_requests, successes,
-                         failures, max_time, total_time, start_time)
+        self.save_report(list_requests, num_requests,
+                         successes, failures, max_time, total_time, start_time)
 
     def get_num_requests(self):
         '''
@@ -139,8 +172,8 @@ class App:
             num_requests = int(num_requests)
             return num_requests
         except Exception as ex:
-            print(f'Erro ao tentar converser a entrada {
-                num_requests} para INT', ex)
+            print(f'Erro ao tentar converser a entrada 
+                  {num_requests} para INT', ex)
 
     def get_timeout(self):
         '''
@@ -207,6 +240,20 @@ class App:
         print('Relatório salvo no banco de dados com sucesso!')
 
     def save_txt_report(self, requisicoes, num_requests, successes, failures, max_time, avg_time):
+        '''
+        Salva o relatório de testes em um arquivo texto.
+
+        Parâmetros:
+        - requisicoes (list): Lista de objetos Requisicao
+        - num_requests (int): Número total de requisições 
+        - successes (int): Número de requisições bem-sucedidas
+        - failures (int): Número de falhas nas requisições
+        - max_time (float): Tempo máximo de requisição
+        - avg_time (float): Tempo médio de requisição
+        
+        Retorna:
+        - None
+        '''
         filename = f'relatorio_final.txt'
         with open(filename, 'w') as file:
             for requisicao in requisicoes:

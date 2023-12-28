@@ -50,8 +50,8 @@ Solicita ao usuário a URL da rota a ser testada e o método HTTP (GET, POST, et
 
 Chama os métodos específicos de acordo com o método HTTP informado.
 
-### from_data_request()
-Utilizado para métodos POST, PUT e PATCH que enviam uma carga (body) na requisição.
+### make_request()
+Utilizado para métodos HTTP que enviam uma carga (body) na requisição ou via paramêtro na url.
 
 Lê os payloads a serem enviados de um arquivo CSV ou JSON.
 
@@ -61,16 +61,8 @@ Salva cada requisição realizada no banco de dados.
 
 Gera o relatório final com o resumo.
 
-### from_query_request()
-Utilizado para métodos GET e DELETE que não enviam body.
 
-Realiza as requisições em loop para a URL informada.
-
-Salva cada requisição realizada no banco de dados.
-
-Gera o relatório final com o resumo.
-
-### save_report_and_print()
+### save_report()
 Recebe os dados coletados durante os testes.
 
 Salva o resumo geral no banco de dados.
@@ -80,3 +72,8 @@ Imprime o resumo no console.
 Gera um arquivo texto com os detalhes de todas as requisições.
 
 Dessa forma, o app.py provê uma maneira simples de testar requisições HTTP contra uma API e analisar o desempenho e resultados.
+
+### save_txt_report()
+Recebe os dados coletados durante os testes.
+
+Exporta o resumo geral na raiz do projeto no arquivo relatorio_final.txt
