@@ -1,5 +1,8 @@
 certifi==2023.11.17
 charset-normalizer==3.3.2
+greenlet==3.0.3
 idna==3.6
 requests==2.31.0
+SQLAlchemy==2.0.23
+typing_extensions==4.9.0
 urllib3==2.1.0
